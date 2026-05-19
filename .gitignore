@@ -1,5 +1,8 @@
 node_modules/
+*.log
+*.tmp
+.DS_Store
+evidence/*.log
+taskmaster/config/.env
+**/.env
 *.env
-vault/*.enc
-logs/
-__pycache__/

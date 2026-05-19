@@ -1,0 +1,25 @@
+name: HADES vOmega CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Hacer ejecutables los scripts
+        run: chmod +x src/hades_core.sh tests/smoke_test.sh
+
+      - name: Version check
+        run: bash src/hades_core.sh version
+
+      - name: Status check
+        run: bash src/hades_core.sh status
+
+      - name: Smoke test
+        run: bash tests/smoke_test.sh
