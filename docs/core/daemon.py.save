@@ -1,0 +1,20 @@
+import socket,threading,hashlib,subprocess,os
+HOST="127.0.0.1";PORT=31337
+MYTHOS=os.path.expanduser("~/mythos/mythos-router-main")
+def route(d):
+ try:
+  p=subprocess.Popen(["node",MYTHOS+"/dist/cli.js"],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+  o,_=p.communicate(input=d,timeout=5)
+  return o if o else b"NULL"
+ except:
+  return b"ERR"
+def h(c):
+ d=c.recv(4096)
+ sig=hashlib.sha256(d).hexdigest()
+ r=route(d)
+ ")
+ c.close()
+s=socket.socket();s.bind((HOST,PORT));s.listen(5)
+while 1:
+ c,_=s.accept()
+ threading.Thread(target=h,args=(c,),daemon=1).start()

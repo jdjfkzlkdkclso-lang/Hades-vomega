@@ -1,0 +1,10 @@
+{
+  "ping": {"action": "ping"},
+  "nucleo": {"action": "nucleo_info"},
+  "atencion": {"action": "atencion", "data": "analizar este texto"},
+  "oraculo": {"action": "oraculo", "series": [10, 20, 30, 40, 50]},
+  "forense": {"action": "forense", "path": "/ruta/al/archivo"},
+  "quantum": {"action": "quantum"},
+  "bash": {"action": "bash", "bash": "ls -la"},
+  "btc": {"action": "btc", "method": "getblockchaininfo"}
+}

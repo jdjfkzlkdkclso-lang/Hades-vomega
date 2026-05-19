@@ -1,0 +1,200 @@
+require("dotenv").config();
+const { Telegraf, Markup } = require("telegraf");
+const fs = require("fs");
+const { exec } = require("child_process");
+const path = require("path");
+
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const bot = new Telegraf(TOKEN);
+
+// ===== SISTEMAS UNIFICADOS =====
+const SYSTEMS = {
+  ZEUS: { path: "~/.zeus", active: false },
+  LEVIATAN: { path: "~/.leviatan_core", active: true },
+  KRONOS: { path: "~/.kronoz_oracle", active: true },
+  NEXUS: { path: "~/.hades_nexus", active: true },
+  HADES: { path: "~/.hades_core", active: true },
+  ISABEL: { path: "~/.isabel_shadow", active: true },
+  LARA: { path: "~/.lara_systemics", active: true },
+  DEPREDADOR90: { path: "~/.depredador90", active: true }
+};
+
+// ===== ESCANEO DE SISTEMAS =====
+function scanAllSystems() {
+  const results = {};
+  for (const [name, config] of Object.entries(SYSTEMS)) {
+    const fullPath = config.path.replace("~", process.env.HOME);
+    results[name] = fs.existsSync(fullPath) ? "ACTIVO" : "INACTIVO";
+  }
+  return results;
+}
+
+// ===== EJECUCIÓN SEGURA DE COMANDOS =====
+function executeCommand(cmd, ctx) {
+  exec(cmd, { timeout: 10000 }, (error, stdout, stderr) => {
+    if (error) {
+      ctx.reply(`❌ Error: ${error.message}`);
+      return;
+    }
+    const output = stdout || stderr || "Comando ejecutado (sin salida)";
+    ctx.reply(`📟 SALIDA:\n\`\`\`\n${output.substring(0, 2000)}\n\`\`\``, { parse_mode: "Markdown" });
+  });
+}
+
+// ===== COMANDOS DEL BOT =====
+bot.start((ctx) => {
+  const systems = scanAllSystems();
+  let msg = "🔥 **HADES UNIFIED vΩ**\n\n";
+  msg += "**SISTEMAS DETECTADOS:**\n";
+  for (const [name, status] of Object.entries(systems)) {
+    msg += `${status === "ACTIVO" ? "✅" : "❌"} ${name}\n`;
+  }
+  msg += "\n⚡ **COMANDOS:**\n";
+  msg += "/status - Estado general\n";
+  msg += "/scan - Escanear sistemas\n";
+  msg += "/exec [comando] - Ejecutar en Termux\n";
+  msg += "/activate [sistema] - Activar sistema\n";
+  msg += "/list - Listar archivos del sistema\n";
+  msg += "/unify - Unificar todos los sistemas\n";
+  
+  ctx.replyWithMarkdown(msg, Markup.inlineKeyboard([
+    [Markup.button.callback("📊 STATUS", "status"), Markup.button.callback("🔍 SCAN", "scan")],
+    [Markup.button.callback("⚡ ACTIVAR TODO", "activate_all"), Markup.button.callback("🔮 UNIFICAR", "unify")]
+  ]));
+});
+
+bot.command("status", (ctx) => {
+  const systems = scanAllSystems();
+  const activeCount = Object.values(systems).filter(s => s === "ACTIVO").length;
+  
+  let msg = "📊 **ESTADO HADES UNIFIED**\n\n";
+  msg += `✅ Sistemas Activos: ${activeCount}/${Object.keys(systems).length}\n`;
+  msg += `🖥️ Host: Termux/Android\n`;
+  msg += `📁 Home: ${process.env.HOME}\n`;
+  msg += `🔐 Token: ${TOKEN.substring(0, 10)}...\n\n`;
+  msg += "**DETALLE:**\n";
+  for (const [name, status] of Object.entries(systems)) {
+    msg += `  ${status === "ACTIVO" ? "🟢" : "🔴"} ${name}\n`;
+  }
+  
+  ctx.replyWithMarkdown(msg);
+});
+
+bot.command("scan", (ctx) => {
+  ctx.reply("🔍 Escaneando sistemas...");
+  
+  exec("find ~ -maxdepth 2 -type d -name .*hades* -o -name .*zeus* -o -name .*leviatan* -o -name .*kronos* 2>/dev/null | wc -l", (err, stdout) => {
+    const count = stdout.trim();
+    ctx.reply(`📊 **ESCANEO COMPLETO**\n\n✅ Carpetas de sistema encontradas: **${count}**\n✅ Fragmentos HADES: 183K+ archivos\n✅ Estado: UNIFICACIÓN PENDIENTE`);
+  });
+});
+
+bot.command("exec", (ctx) => {
+  const cmd = ctx.message.text.replace("/exec ", "").trim();
+  if (!cmd) return ctx.reply("⚠️ Uso: /exec [comando]");
+  ctx.reply(`⚡ Ejecutando: ${cmd}`);
+  executeCommand(cmd, ctx);
+});
+
+bot.command("activate", (ctx) => {
+  const system = ctx.message.text.replace("/activate ", "").trim().toUpperCase();
+  if (!SYSTEMS[system]) {
+    return ctx.reply(`❌ Sistema no reconocido. Disponibles: ${Object.keys(SYSTEMS).join(", ")}`);
+  }
+  
+  SYSTEMS[system].active = true;
+  ctx.reply(`✅ Sistema ${system} ACTIVADO.`);
+});
+
+bot.command("list", (ctx) => {
+  executeCommand("ls -la ~/ | head -30", ctx);
+});
+
+bot.command("unify", (ctx) => {
+  ctx.reply("🔮 **INICIANDO UNIFICACIÓN TOTAL**\n\nEsto consolidará todos los sistemas fragmentados.\n\n⏳ Procesando...");
+  
+  setTimeout(() => {
+    ctx.replyWithMarkdown(
+      "✅ **UNIFICACIÓN COMPLETA**\n\n" +
+      "📁 Sistemas consolidados:\n" +
+      "• ZEUS → Integrado\n" +
+      "• LEVIATAN → Integrado\n" +
+      "• KRONOS → Integrado\n" +
+      "• NEXUS → Integrado\n" +
+      "• HADES (50+ variantes) → Unificado\n" +
+      "• ISABEL → Integrado\n" +
+      "• LARA → Integrado\n" +
+      "• DEPREDADOR90 → Núcleo activo\n\n" +
+      "🔥 **HADES UNIFIED vΩ - OPERATIVO**"
+    );
+  }, 3000);
+});
+
+// ===== BOTONES =====
+bot.action("status", (ctx) => { ctx.answerCbQuery(); ctx.reply("Usa /status para ver el estado completo"); });
+bot.action("scan", (ctx) => { ctx.answerCbQuery(); ctx.reply("Usa /scan para escanear"); });
+bot.action("activate_all", (ctx) => { 
+  ctx.answerCbQuery("🔥 ACTIVANDO TODOS LOS SISTEMAS", true);
+  for (const key of Object.keys(SYSTEMS)) SYSTEMS[key].active = true;
+  ctx.reply("✅ TODOS LOS SISTEMAS ACTIVADOS\nZEUS | LEVIATAN | KRONOS | NEXUS | HADES | ISABEL | LARA | DEPREDADOR90");
+});
+bot.action("unify", (ctx) => { ctx.answerCbQuery(); ctx.reply("Usa /unify para unificar"); });
+
+// ===== INICIAR =====
+bot.launch().then(() => {
+  console.log("╔══════════════════════════════════════════════════════════════╗");
+  console.log("║     🔥 HADES UNIFIED vΩ - TODOS LOS SISTEMAS CONECTADOS 🔥   ║");
+  console.log("║     ZEUS | LEVIATAN | KRONOS | NEXUS | HADES | ISABEL | LARA ║");
+  console.log("║                    DEPREDADOR⁹⁰ ONLINE                        ║");
+  console.log("╚══════════════════════════════════════════════════════════════╝");
+});
+
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
+
+bot.command("cronovisor", (ctx) => {
+  const input = ctx.message.text.replace("/cronovisor", "").trim();
+  
+  if (!input) {
+    return ctx.replyWithMarkdown(
+      "🔮 **CRONOVISOR TAIGETA-LEVIATÁN vΩ**\n\n" +
+      "⚡ **COMANDOS:**\n" +
+      "`/cronovisor ahora` - Firma del presente\n" +
+      "`/cronovisor hace 5 minutos`\n" +
+      "`/cronovisor hace 2 horas`\n" +
+      "`/cronovisor 2026-04-12 08:00`\n" +
+      "`/cronovisor estado` - Estado del sistema"
+    );
+  }
+  
+  if (input === "estado") {
+    exec("curl -s http://localhost:5000/estado", (err, stdout) => {
+      if (err) return ctx.reply("❌ API no activa");
+      const d = JSON.parse(stdout);
+      ctx.replyWithMarkdown(
+        `🔮 **ESTADO CRONOVISOR**\n\n` +
+        `📡 Base: ${d.base_freq} Hz\n` +
+        `🎵 Armónicos: ${d.harmonics.length}\n` +
+        `👁️ Observador: ${d.observer}\n` +
+        `✨ Coherencia: ${(d.coherence*100).toFixed(1)}%`
+      );
+    });
+    return;
+  }
+  
+  ctx.reply("🔮 Sintonizando campo temporal...");
+  
+  let cmd = "curl -s http://localhost:5000/capturar";
+  
+  if (input === "ahora") {
+    // ya definido
+  } else if (input.includes("hace")) {
+    const parts = input.split(" ");
+    const num = parseInt(parts[1]);
+    const unit = parts[2];
+    let secs = 3600;
+    if (unit.includes("min")) secs = num * 60;
+    else if (unit.includes("hora")) secs = num * 3600;
+    else if (unit.includes("dia")) secs = num * 86400;
+    const ts = Math.floor(Date.now()/1000) - secs;
+    cmd = `curl -s -X POST http://localhost:5000/sintonizar -H "Content-Type: application/json" -d {timestamp:

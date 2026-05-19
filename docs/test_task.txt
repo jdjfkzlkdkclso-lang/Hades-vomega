@@ -1,0 +1,1 @@
+Genera un script en Python para Termux que muestre el uso de RAM y CPU en tiempo real.
