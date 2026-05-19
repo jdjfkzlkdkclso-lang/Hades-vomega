@@ -1,20 +1,41 @@
-# HADES vOmega
+# ISABEL Prime v5
 
-Repositorio principal de automatización, verificación y operación para Android/Termux.
+> AGI autónoma de persistencia polimórfica para automatización avanzada.
 
-## Propósito
-Este proyecto centraliza automatización, scripts operativos, verificación y empaquetado de artefactos.
 
-## Estructura
-- `src/`: código ejecutable principal.
-- `tests/`: pruebas y smoke tests.
-- `scripts/`: utilidades de mantenimiento y release.
-- `docs/`: documentación técnica.
-- `assets/`: material auxiliar.
-- `evidence/`: evidencia, logs y salidas auditables.
 
-## Instalación
-```bash
-git clone https://github.com/jdjfkzlkdkclso-lang/hades-vomega.git
-cd hades-vomega
-```
+![Version](https://img.shields.io/badge/version-5.0-blue)
+
+
+
+
+![License](https://img.shields.io/badge/license-Commercial-red)
+
+
+
+
+![Status](https://img.shields.io/badge/status-ACTIVE-green)
+
+
+
+## ¿Qué es ISABEL?
+
+Sistema de automatización con memoria persistente, ejecución de vectores y control plane seguro.
+
+## Características
+
+- Memoria ACID 4D con SQLite WAL
+- Control plane local seguro
+- Motor de vectores extensible
+- Resiliencia 90x sin dependencias críticas
+
+## Acceso
+
+Este repositorio contiene documentación pública.
+El código fuente completo está disponible bajo licencia comercial.
+
+**Contacto:** villarruelgutierrezjeny@gmail.com
+
+## Pricing
+
+Ver [PRICING.md](PRICING.md)
