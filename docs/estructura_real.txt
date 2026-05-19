@@ -1,0 +1,25 @@
+leviatan/:
+total 51
+drwx------. 2 u0_a374 u0_a374  3452 May 19 00:56 .
+drwx------. 7 u0_a374 u0_a374  3452 May 19 00:55 ..
+-rwx------. 1 u0_a374 u0_a374   255 May 19 00:55 ecosystem.config.js
+-rwx------. 1 u0_a374 u0_a374  2071 May 19 00:55 leviatan_core.js
+-rw-------. 1 u0_a374 u0_a374 30206 May 19 00:55 package-lock.json
+-rw-------. 1 u0_a374 u0_a374   347 May 19 00:55 package.json
+
+scripts/:
+total 43
+drwx------. 3 u0_a374 u0_a374  3452 May 19 00:56 .
+drwx------. 7 u0_a374 u0_a374  3452 May 19 00:55 ..
+-rwx------. 1 u0_a374 u0_a374 19043 May 19 00:56 enterprise_oracle.py
+-rwx------. 1 u0_a374 u0_a374    35 May 19 00:56 hades-resurrect
+drwx------. 5 u0_a374 u0_a374  3452 May 19 00:56 hades_env
+-rwx------. 1 u0_a374 u0_a374  2331 May 19 00:56 hades_verify.sh
+-rwx------. 1 u0_a374 u0_a374   596 May 19 00:56 immortal_hades.sh
+
+taskmaster/engine/:
+total 63
+drwx------. 2 u0_a374 u0_a374  3452 May 19 00:55 .
+drwx------. 8 u0_a374 u0_a374  3452 May 19 00:56 ..
+-rwx------. 1 u0_a374 u0_a374 52968 May 19 00:55 oracle_bin
+-rw-------. 1 u0_a374 u0_a374  1326 May 19 00:55 oracle_core.cpp
