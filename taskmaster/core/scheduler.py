@@ -1,0 +1,27 @@
+import time, json, os, subprocess
+TM_ROOT = os.environ.get("HOME", "") + "/HADES_TASKMASTER_PRO"
+CONFIG_FILE = f"{TM_ROOT}/config/tasks.json"
+
+def run_tasks():
+    if not os.path.exists(CONFIG_FILE): return
+    try:
+        with open(CONFIG_FILE, 'r+') as f:
+            data = json.load(f)
+            now = int(time.time())
+            updated = False
+            for task in data.get("tasks", []):
+                if task.get("enabled", True) and (now - task.get("last_run", 0)) >= task.get("interval", 300):
+                                        subprocess.Popen(task["command"], shell=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    task["last_run"] = now
+                    updated = True
+            if updated:
+                f.seek(0)
+                json.dump(data, f, indent=2)
+                f.truncate()
+    except Exception as e:
+        print(f"[{time.strftime('%H:%M:%S')}] ORACLE FAULT: {e}")
+
+print("Oráculo Predictivo Iniciado.")
+while True:
+    run_tasks()
+    time.sleep(1)

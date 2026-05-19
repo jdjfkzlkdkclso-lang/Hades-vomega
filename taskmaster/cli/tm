@@ -1,0 +1,18 @@
+#!/data/data/com.termux/files/usr/bin/bash
+TM_ROOT="$HOME/HADES_TASKMASTER_PRO"
+case "$1" in
+  start)
+    termux-wake-lock
+    cd "$TM_ROOT/web" && nohup node server.js >> "$TM_ROOT/logs/node.log" 2>&1 &
+    echo "[🚀] HADES-vΩ ACTIVADO"
+    ;;
+  stop)
+    pkill -f "node server.js" && termux-wake-unlock
+    echo "[🛑] SISTEMA DETENIDO"
+    ;;
+  query)
+    curl -s -X POST http://localhost:8080/api/ai/query \
+    -H "Content-Type: application/json" \
+    -d "{\"prompt\":\"$2\", \"auth_key\":\"HADES_ELITE_90_X\"}" | jq .response
+    ;;
+esac
